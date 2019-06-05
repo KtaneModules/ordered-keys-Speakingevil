@@ -275,6 +275,7 @@ public class OrderedKeysScript : MonoBehaviour {
     private int resetCount;
     private IEnumerator sequence;
     private bool[] alreadypressed = new bool[6] { true, true, true, true, true, true};
+    private bool pressable;
     private List<string> presses = new List<string> { };
     private List<string> answer = new List<string> { };
     private List<string> labelList = new List<string> { };
@@ -305,7 +306,7 @@ public class OrderedKeysScript : MonoBehaviour {
 
     private void KeyPress(KMSelectable key)
     {
-        if (alreadypressed[keys.IndexOf(key)] == false && moduleSolved == false)
+        if (alreadypressed[keys.IndexOf(key)] == false && moduleSolved == false && pressbale == true)
         {
             GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
             alreadypressed[keys.IndexOf(key)] = true;
@@ -355,6 +356,7 @@ public class OrderedKeysScript : MonoBehaviour {
     {
         if (moduleSolved == false)
         {
+	    pressable = false;
             List<int> initialList = new List<int> { 1, 2, 3, 4, 5, 6 };
             List<int> finalList = new List<int> { };
             for (int i = 0; i < 6; i++)
@@ -455,6 +457,7 @@ public class OrderedKeysScript : MonoBehaviour {
                 if (i == 29)
                 {
                     i = -1;
+		    pressable = true;
                     StopCoroutine(sequence);
                 }
             }
