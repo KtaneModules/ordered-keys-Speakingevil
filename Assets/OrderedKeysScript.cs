@@ -434,22 +434,22 @@ public class OrderedKeysScript : MonoBehaviour {
                     switch (info[(i - 4) / 5][1])
                     {
                         case 0:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 0, 0, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 25, 25, 255);
                             break;
                         case 1:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(0, 255, 0, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 25, 255);
                             break;
                         case 2:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(75, 75, 255, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 25, 255, 255);
                             break;
                         case 3:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(0, 255, 255, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 255, 255);
                             break;
                         case 4:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 0, 255, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 75, 255, 255);
                             break;
                         case 5:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 0, 255);
+                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 75, 255);
                             break;
                     }
                     keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().text = labelList[(i - 4) / 5];
