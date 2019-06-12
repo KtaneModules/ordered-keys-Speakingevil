@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using KModkit;
 
-public class OrderedKeysScript : MonoBehaviour {
+public class OrderedKeysScript : MonoBehaviour
+{
 
     public KMAudio Audio;
     public KMBombInfo bomb;
+    public KMColorblindMode ColorblindMode;
 
     public List<KMSelectable> keys;
     public Renderer[] meter;
@@ -274,11 +275,12 @@ public class OrderedKeysScript : MonoBehaviour {
     private int pressCount;
     private int resetCount;
     private IEnumerator sequence;
-    private bool[] alreadypressed = new bool[6] { true, true, true, true, true, true};
+    private bool[] alreadypressed = new bool[6] { true, true, true, true, true, true };
     private bool pressable;
     private List<string> presses = new List<string> { };
     private List<string> answer = new List<string> { };
     private List<string> labelList = new List<string> { };
+    private bool colorblind;
 
     //Logging
     static int moduleCounter = 1;
@@ -300,13 +302,15 @@ public class OrderedKeysScript : MonoBehaviour {
         }
     }
 
-    void Start () {
+    void Start()
+    {
+        colorblind = ColorblindMode.ColorblindModeActive;
         Reset();
-	}
+    }
 
     private void KeyPress(KMSelectable key)
     {
-        if (alreadypressed[keys.IndexOf(key)] == false && moduleSolved == false && pressbale == true)
+        if (alreadypressed[keys.IndexOf(key)] == false && moduleSolved == false && pressable == true)
         {
             GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
             alreadypressed[keys.IndexOf(key)] = true;
@@ -337,7 +341,7 @@ public class OrderedKeysScript : MonoBehaviour {
                     else
                     {
                         moduleSolved = true;
-                    }                    
+                    }
                 }
                 else
                 {
@@ -352,11 +356,41 @@ public class OrderedKeysScript : MonoBehaviour {
         }
     }
 
+    private void setKey(int keyIndex)
+    {
+        keyID[keyIndex].material = keyColours[info[keyIndex][0]];
+        switch (info[keyIndex][2])
+        {
+            case 0:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 25, 25, 255);
+                break;
+            case 1:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 25, 255);
+                break;
+            case 2:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(25, 25, 255, 255);
+                break;
+            case 3:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 255, 255);
+                break;
+            case 4:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 75, 255, 255);
+                break;
+            default:
+                keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 75, 255);
+                break;
+        }
+        var label = (info[keyIndex][1] + 1).ToString();
+        if (colorblind)
+            label += "\n" + "RGBCMY"[info[keyIndex][2]] + "\n\n" + "RGBCMY"[info[keyIndex][0]];
+        keys[keyIndex].GetComponentInChildren<TextMesh>().text = label;
+    }
+
     private void Reset()
     {
         if (moduleSolved == false)
         {
-	    pressable = false;
+            pressable = false;
             List<int> initialList = new List<int> { 1, 2, 3, 4, 5, 6 };
             List<int> finalList = new List<int> { };
             for (int i = 0; i < 6; i++)
@@ -382,7 +416,7 @@ public class OrderedKeysScript : MonoBehaviour {
                 labelList.Add((info[i][3] + 1).ToString());
                 //Debug.Log(info[i][0] + "," + info[i][1] + "," + i + "," + info[i][3] +"="+ table[info[i][0]][info[i][1]][i][info[i][3]]);
             }
-           
+
             string[] a = new string[6];
             string[] b = new string[6];
             for (int i = 0; i < 6; i++)
@@ -391,15 +425,15 @@ public class OrderedKeysScript : MonoBehaviour {
                 b[i] = colourList[info[i][1]];
                 if (i == 5)
                 {
-                    string A = String.Join(", ", a);
-                    string B = String.Join(", ", b);
+                    string A = string.Join(", ", a);
+                    string B = string.Join(", ", b);
                     Debug.LogFormat("[Ordered Keys #{0}] After {1} reset(s), the buttons had the colours: {2}", moduleID, resetCount, A);
                     Debug.LogFormat("[Ordered Keys #{0}] After {1} reset(s), the labels had the colours: {2}", moduleID, resetCount, B);
                 }
             }
             string[] label = labelList.ToArray();
             string[] answ = answer.ToArray();
-            string l = string.Join(", " , label);
+            string l = string.Join(", ", label);
             string ans = string.Join(string.Empty, answ);
             Debug.LogFormat("[Ordered Keys #{0}] After {1} reset(s), the buttons were labelled: {2}", moduleID, resetCount, l);
             Debug.LogFormat("[Ordered Keys #{0}] After {1} reset(s), the pressing order was: {2}", moduleID, resetCount, ans);
@@ -427,37 +461,15 @@ public class OrderedKeysScript : MonoBehaviour {
                 }
                 else
                 {
-                    alreadypressed[(i - 4) / 5] = false;
                     keys[(i - 4) / 5].transform.localPosition = new Vector3(0, 0, 0);
                     GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonRelease, transform);
-                    keyID[(i - 4) / 5].material = keyColours[info[(i - 4) / 5][0]];
-                    switch (info[(i - 4) / 5][1])
-                    {
-                        case 0:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 25, 25, 255);
-                            break;
-                        case 1:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 25, 255);
-                            break;
-                        case 2:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 25, 255, 255);
-                            break;
-                        case 3:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(25, 255, 255, 255);
-                            break;
-                        case 4:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 75, 255, 255);
-                            break;
-                        case 5:
-                            keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 75, 255);
-                            break;
-                    }
-                    keys[(i - 4) / 5].GetComponentInChildren<TextMesh>().text = labelList[(i - 4) / 5];
+                    alreadypressed[(i - 4) / 5] = false;
+                    setKey((i - 4) / 5);
                 }
                 if (i == 29)
                 {
                     i = -1;
-		    pressable = true;
+                    pressable = true;
                     StopCoroutine(sequence);
                 }
             }
@@ -465,40 +477,43 @@ public class OrderedKeysScript : MonoBehaviour {
             {
                 for (int j = 0; j < 6; j++)
                 {
-                    int[] rand = new int[3];
-                    for (int k = 0; k < 3; k++)
-                    {
-                        rand[k] = UnityEngine.Random.Range(0, 6);
-                    }
                     if (alreadypressed[j] == true)
                     {
-                        keyID[j].material = keyColours[rand[0]];
-                        switch (rand[1])
-                        {
-                            case 0:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(255, 0, 0, 255);
-                                break;
-                            case 1:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(0, 255, 0, 255);
-                                break;
-                            case 2:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(75, 75, 225, 255);
-                                break;
-                            case 3:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(0, 255, 255, 255);
-                                break;
-                            case 4:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(255, 0, 255, 255);
-                                break;
-                            case 5:
-                                keys[j].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 0, 255);
-                                break;
-                        }
-                        keys[j].GetComponentInChildren<TextMesh>().text = (rand[2] + 1).ToString();
+                        for (int k = 0; k < 3; k++)
+                            info[j][k] = Random.Range(0, 6);
+                        setKey(j);
                     }
                 }
             }
             yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} press 123456 [position in reading order] | !{0} colorblind";
+#pragma warning restore 414
+
+    private IEnumerator ProcessTwitchCommand(string command)
+    {
+        if (Regex.IsMatch(command, @"^\s*colorblind\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            colorblind = true;
+            for (int i = 0; i < keys.Count; i++)
+                setKey(i);
+            yield return null;
+            yield break;
+        }
+
+        var m = Regex.Match(command, @"^\s*(?:press\s*)?([123456 ,;]+)\s*$");
+        if (!m.Success)
+            yield break;
+
+        foreach (var keyToPress in m.Groups[1].Value.Where(ch => ch >= '1' && ch <= '6').Select(ch => keys[ch - '1']))
+        {
+            yield return null;
+            while (!pressable)
+                yield return "trycancel";
+            yield return new[] { keyToPress };
         }
     }
 }
