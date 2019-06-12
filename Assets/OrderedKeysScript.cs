@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -334,7 +334,7 @@ public class OrderedKeysScript : MonoBehaviour
                 {
                     meter[stage - 1].material = keyColours[7];
                     Audio.PlaySoundAtTransform("InputCorrect", transform);
-                    if (stage < 4)
+                    if (stage < 3)
                     {
                         stage++;
                     }
@@ -395,15 +395,15 @@ public class OrderedKeysScript : MonoBehaviour
             List<int> finalList = new List<int> { };
             for (int i = 0; i < 6; i++)
             {
-                int temp = UnityEngine.Random.Range(0, initialList.Count());
+                int temp = Random.Range(0, initialList.Count());
                 finalList.Add(initialList[temp]);
                 initialList.RemoveAt(temp);
             }
             for (int i = 0; i < 6; i++)
             {
                 answer.Add((finalList.IndexOf(i + 1) + 1).ToString());
-                info[i][0] = UnityEngine.Random.Range(0, 6);
-                info[i][1] = UnityEngine.Random.Range(0, 6);
+                info[i][0] = Random.Range(0, 6);
+                info[i][1] = Random.Range(0, 6);
                 info[i][2] = i + 1;
                 for (int j = 0; j < 6; j++)
                 {
@@ -414,7 +414,6 @@ public class OrderedKeysScript : MonoBehaviour
                     }
                 }
                 labelList.Add((info[i][3] + 1).ToString());
-                //Debug.Log(info[i][0] + "," + info[i][1] + "," + i + "," + info[i][3] +"="+ table[info[i][0]][info[i][1]][i][info[i][3]]);
             }
 
             string[] a = new string[6];
