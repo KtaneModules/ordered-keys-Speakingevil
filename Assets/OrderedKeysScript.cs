@@ -359,7 +359,7 @@ public class OrderedKeysScript : MonoBehaviour
     private void setKey(int keyIndex)
     {
         keyID[keyIndex].material = keyColours[info[keyIndex][0]];
-        switch (info[keyIndex][2])
+        switch (info[keyIndex][1])
         {
             case 0:
                 keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 25, 25, 255);
@@ -380,9 +380,9 @@ public class OrderedKeysScript : MonoBehaviour
                 keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 75, 255);
                 break;
         }
-        var label = (info[keyIndex][1] + 1).ToString();
+        var label = (info[keyIndex][3] + 1).ToString();
         if (colorblind)
-            label += "\n" + "RGBCMY"[info[keyIndex][2]] + "\n\n" + "RGBCMY"[info[keyIndex][0]];
+            label += "\n" + "RGBCMY"[info[keyIndex][1]] + "\n\n" + "RGBCMY"[info[keyIndex][0]];
         keys[keyIndex].GetComponentInChildren<TextMesh>().text = label;
     }
 
@@ -478,7 +478,7 @@ public class OrderedKeysScript : MonoBehaviour
                 {
                     if (alreadypressed[j] == true)
                     {
-                        for (int k = 0; k < 3; k++)
+                        for (int k = 0; k < 4; k++)
                             info[j][k] = Random.Range(0, 6);
                         setKey(j);
                     }
