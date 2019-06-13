@@ -356,10 +356,10 @@ public class OrderedKeysScript : MonoBehaviour
         }
     }
 
-    private void setKey(int keyIndex)
+    private void setKey(int keyIndex, int? color = null, int? labelColor = null, int? label = null)
     {
-        keyID[keyIndex].material = keyColours[info[keyIndex][0]];
-        switch (info[keyIndex][1])
+        keyID[keyIndex].material = keyColours[color ?? info[keyIndex][0]];
+        switch (labelColor ?? info[keyIndex][1])
         {
             case 0:
                 keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 25, 25, 255);
@@ -380,10 +380,10 @@ public class OrderedKeysScript : MonoBehaviour
                 keys[keyIndex].GetComponentInChildren<TextMesh>().color = new Color32(255, 255, 75, 255);
                 break;
         }
-        var label = (info[keyIndex][3] + 1).ToString();
+        var labelStr = ((label ?? info[keyIndex][3]) + 1).ToString();
         if (colorblind)
-            label += "\n" + "RGBCMY"[info[keyIndex][1]] + "\n\n" + "RGBCMY"[info[keyIndex][0]];
-        keys[keyIndex].GetComponentInChildren<TextMesh>().text = label;
+            labelStr += "\n" + "RGBCMY"[info[keyIndex][1]] + "\n\n" + "RGBCMY"[info[keyIndex][0]];
+        keys[keyIndex].GetComponentInChildren<TextMesh>().text = labelStr;
     }
 
     private void Reset()
@@ -475,14 +475,8 @@ public class OrderedKeysScript : MonoBehaviour
             else
             {
                 for (int j = 0; j < 6; j++)
-                {
                     if (alreadypressed[j] == true)
-                    {
-                        for (int k = 0; k < 4; k++)
-                            info[j][k] = Random.Range(0, 6);
-                        setKey(j);
-                    }
-                }
+                        setKey(j, Random.Range(0,6), Random.Range(0, 6), Random.Range(0, 6));
             }
             yield return new WaitForSeconds(0.1f);
         }
